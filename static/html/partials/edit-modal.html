@@ -1,0 +1,43 @@
+<div class="modal-backdrop" id="edit-modal" hidden role="dialog" aria-modal="true" aria-labelledby="edit-title">
+    <div class="modal">
+        <div class="modal-head">
+            <h3 id="edit-title">Edit monitor</h3>
+            <button type="button" class="close" data-close aria-label="Close">×</button>
+        </div>
+        <form id="edit-form" novalidate>
+            <div class="form-grid">
+                <label class="field">URL<input type="url" id="edit-url" required spellcheck="false"></label>
+                <label class="field">Method
+                    <select id="edit-method">
+                        <option>GET</option><option>HEAD</option><option>POST</option><option>PATCH</option><option>PUT</option><option>DELETE</option><option>OPTIONS</option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-grid">
+                <label class="field">Name<input type="text" id="edit-name" maxlength="120"></label>
+                <label class="field">Alert email<input type="email" id="edit-email" placeholder="leave empty to disable"></label>
+            </div>
+            <div class="form-grid thirds">
+                <label class="field">Expected status<input type="number" id="edit-expected" min="100" max="599"></label>
+                <label class="field">Check every
+                    <select id="edit-interval">
+                        <option value="30">30 seconds</option>
+                        <option value="60">1 minute</option>
+                        <option value="300">5 minutes</option>
+                        <option value="900">15 minutes</option>
+                        <option value="3600">1 hour</option>
+                    </select>
+                </label>
+                <label class="field">Timeout (s)<input type="number" id="edit-timeout" min="1" max="60"></label>
+            </div>
+            <div class="form-grid single">
+                <label class="field">Custom headers (JSON object)<textarea id="edit-headers"></textarea></label>
+            </div>
+            <div class="form-grid single">
+                <label class="field">Payload<textarea id="edit-body"></textarea></label>
+            </div>
+            <div class="form-error" id="edit-error" role="alert"></div>
+            <button type="submit" class="btn-primary">Save changes</button>
+        </form>
+    </div>
+</div>

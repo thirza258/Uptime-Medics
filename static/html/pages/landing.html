@@ -1,0 +1,26 @@
+<section class="stats" aria-label="System health">
+    <div class="stat"><div class="label">Public monitors</div><div class="value" id="stat-public">–</div></div>
+    <div class="stat up"><div class="label">Up</div><div class="value" id="stat-up">–</div></div>
+    <div class="stat down"><div class="label">Down</div><div class="value" id="stat-down">–</div></div>
+    <div class="stat"><div class="label">Checks performed</div><div class="value" id="stat-checks">–</div></div>
+</section>
+
+{{> monitor-form}}
+
+<section class="card" id="recent" hidden aria-labelledby="recent-title">
+    <div class="card-head">
+        <h2 id="recent-title">Your recent submissions</h2>
+        <span class="hint">Remembered in this browser only · <button type="button" class="btn-ghost" id="forget-recent">forget</button></span>
+    </div>
+    <div id="recent-container"></div>
+</section>
+
+<section class="card" aria-labelledby="juggle-title">
+    <div class="card-head">
+        <h2 id="juggle-title">Community watch</h2>
+        <span class="hint" id="refresh-status" role="status" aria-live="polite">10 random monitored targets · auto-juggling every 10s</span>
+    </div>
+    <div id="juggle-container"><p class="empty">Loading random live probes…</p></div>
+</section>
+
+{{> logs-modal}}

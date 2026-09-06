@@ -1,0 +1,30 @@
+<div class="auth-layout">
+    <section class="card auth-card" aria-labelledby="auth-title">
+        <div class="card-head">
+            <h2 id="auth-title">Welcome back</h2>
+        </div>
+        <div class="tabs" role="tablist">
+            <button type="button" role="tab" id="tab-login" aria-selected="true" data-tab="login">Login</button>
+            <button type="button" role="tab" id="tab-register" aria-selected="false" data-tab="register">Register</button>
+        </div>
+        <form id="auth-form" novalidate data-mode="login">
+            <div class="form-grid halves">
+                <label class="field">Email<input type="email" id="auth-email" required autocomplete="email"></label>
+                <label class="field">Password<input type="password" id="auth-password" required minlength="8" autocomplete="current-password"></label>
+            </div>
+            <div class="form-error" id="auth-error" role="alert"></div>
+            <button type="submit" class="btn-primary" id="auth-submit">Login</button>
+            <p class="hint auth-note">Passwords are hashed with argon2id. Your session is an HTTP-only cookie.</p>
+        </form>
+    </section>
+    <aside class="card auth-aside" aria-labelledby="why-title">
+        <h2 id="why-title">Why register?</h2>
+        <ul class="checklist">
+            <li>Private monitors, hidden from the community watch</li>
+            <li>Pause, edit and delete from your dashboard</li>
+            <li>Email alerts when a target goes down, and when it recovers</li>
+            <li>30 days of check history instead of 48 hours</li>
+        </ul>
+        <p class="hint">Prefer not to sign up? <a href="/">Monitor anonymously from the landing page.</a></p>
+    </aside>
+</div>

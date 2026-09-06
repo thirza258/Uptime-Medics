@@ -1,0 +1,46 @@
+services:
+  uptime-medics:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: uptime-medics:latest
+    container_name: uptime-medics
+    restart: unless-stopped
+    ports:
+      # Host port is configurable via APP_PORT in .env (container always listens on 8080).
+      - "${APP_PORT:-8080}:8080"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      DATABASE_URL: sqlite:///data/uptime_medics.db
+    volumes:
+      - uptime_data:/data
+    healthcheck:
+      test: ["CMD", "uptime-medics", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional local SMTP sink with a web inbox for testing alert emails:
+  #   docker compose --profile dev up -d --build
+  # then set SMTP_HOST=mailpit SMTP_PORT=1025 SMTP_TLS=none SMTP_FROM_ADDRESS=alerts@uptime-medics.local
+  # in .env and open http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: uptime-medics-mailpit
+    profiles: ["dev"]
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+
+volumes:
+  uptime_data:

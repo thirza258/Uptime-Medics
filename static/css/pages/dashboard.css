@@ -1,0 +1,5 @@
+/* Dashboard: the private monitor table. */
+
+.dashboard-table .cell-target { min-width: 220px; }
+.dashboard-table .cell-target .url-truncate { max-width: 320px; }
+.dashboard-table .cell-error { display: block; margin-top: 2px; }

@@ -1,0 +1,53 @@
+<section class="card" aria-labelledby="create-title">
+    <div class="card-head">
+        <h2 id="create-title">Monitor any endpoint</h2>
+        <span class="hint" id="create-hint">Anonymous or registered – no sign-up needed</span>
+    </div>
+    <p class="lead">Any HTTP method, custom headers and payloads. Anonymous monitors are public and join the community watch.</p>
+    <form id="monitor-form" novalidate>
+        <div class="form-grid">
+            <label class="field">URL<input type="url" id="target-url" placeholder="https://api.example.com/health" required autocomplete="off" spellcheck="false"></label>
+            <label class="field">Method
+                <select id="target-method">
+                    <option value="GET">GET</option>
+                    <option value="HEAD">HEAD</option>
+                    <option value="POST">POST</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="OPTIONS">OPTIONS</option>
+                </select>
+            </label>
+        </div>
+        <div class="form-grid">
+            <label class="field">Name (optional)<input type="text" id="target-name" placeholder="Production API health" maxlength="120"></label>
+            <label class="field">Alert email (optional)<input type="email" id="target-email" placeholder="alerts@example.com" autocomplete="email"></label>
+        </div>
+        <div class="form-grid single">
+            <label class="field">Payload (optional, for POST/PATCH/PUT)<textarea id="target-payload" placeholder='{"check": true}'></textarea></label>
+        </div>
+        <details class="advanced" id="advanced">
+            <summary>Advanced options</summary>
+            <div class="inner">
+                <div class="form-grid single">
+                    <label class="field">Custom headers (JSON object)<textarea id="target-headers" placeholder='{"Authorization": "Bearer token", "Content-Type": "application/json"}'></textarea></label>
+                </div>
+                <div class="form-grid thirds">
+                    <label class="field">Expected status<input type="number" id="target-expected" value="200" min="100" max="599"></label>
+                    <label class="field">Check every
+                        <select id="target-interval">
+                            <option value="30">30 seconds</option>
+                            <option value="60" selected>1 minute</option>
+                            <option value="300">5 minutes</option>
+                            <option value="900">15 minutes</option>
+                            <option value="3600">1 hour</option>
+                        </select>
+                    </label>
+                    <label class="field">Timeout (s)<input type="number" id="target-timeout" value="10" min="1" max="60"></label>
+                </div>
+            </div>
+        </details>
+        <button type="submit" class="btn-primary" id="submit-btn">Start monitoring</button>
+    </form>
+    <div class="result-panel" id="result-panel" hidden></div>
+</section>

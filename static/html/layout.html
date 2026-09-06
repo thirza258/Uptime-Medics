@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <meta name="description" content="Monitor any HTTP endpoint in seconds. No sign-up required. Live community probes, email alerts, and a zero-bloat interface.">
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/{{page}}.css">
+</head>
+<body data-page="{{page}}">
+{{> header}}
+<main class="container" id="main">
+{{content}}
+</main>
+{{> footer}}
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script type="module" src="/js/pages/{{page}}.js"></script>
+</body>
+</html>

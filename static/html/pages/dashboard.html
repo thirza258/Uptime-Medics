@@ -1,0 +1,20 @@
+<section class="card" id="dashboard" aria-labelledby="dashboard-title">
+    <div class="card-head">
+        <h2 id="dashboard-title">My monitors</h2>
+        <span class="hint" id="dashboard-hint">Private to your account</span>
+    </div>
+    <div class="table-wrap">
+        <table id="dashboard-table" class="dashboard-table">
+            <thead>
+                <tr><th>Status</th><th>Target</th><th>Method</th><th class="num">Latency</th><th>Interval</th><th>Alerts</th><th>Active</th><th><span class="sr-only">Actions</span></th></tr>
+            </thead>
+            <tbody id="dashboard-body"></tbody>
+        </table>
+    </div>
+    <p class="empty" id="dashboard-empty" hidden>You have no monitors yet. Add one below – it will be private to your account.</p>
+</section>
+
+{{> monitor-form}}
+
+{{> logs-modal}}
+{{> edit-modal}}

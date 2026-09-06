@@ -1,0 +1,13 @@
+target
+data
+*.db
+*.db-shm
+*.db-wal
+.env
+.git
+.DS_Store
+claude_docs
+README.md
+docker-compose.yml
+tests
+Makefile

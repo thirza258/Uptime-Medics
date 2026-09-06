@@ -1,0 +1,18 @@
+/* Landing page: system health tiles above the community watch. */
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.stat {
+    background: var(--white);
+    border: 2px solid var(--dark);
+    border-radius: 4px;
+    padding: 0.7rem 0.9rem;
+    box-shadow: var(--shadow);
+}
+.stat .label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.stat .value { font-size: 1.6rem; font-weight: 900; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat.up .value { color: var(--green); }
+.stat.down .value { color: var(--mcd-red); }
+
+@media (max-width: 720px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+}

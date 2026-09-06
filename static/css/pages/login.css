@@ -1,0 +1,22 @@
+/* Login / register page: form beside a short pitch. */
+
+.auth-layout { display: grid; grid-template-columns: 3fr 2fr; gap: 1.5rem; align-items: start; margin-top: 1rem; }
+.auth-card { margin-bottom: 0; }
+.auth-note { margin-top: 10px; }
+.auth-aside { margin-bottom: 0; background: var(--mcd-yellow); }
+.auth-aside h2 { margin-bottom: 0.75rem; }
+.checklist { list-style: none; margin-bottom: 1rem; }
+.checklist li { padding: 6px 0 6px 26px; position: relative; font-size: 0.92rem; border-bottom: 1px solid rgba(39, 37, 31, 0.25); }
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before {
+    content: "";
+    position: absolute; left: 4px; top: 12px;
+    width: 12px; height: 12px;
+    background: var(--dark);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.auth-aside .hint { color: var(--dark); }
+
+@media (max-width: 720px) {
+    .auth-layout { grid-template-columns: 1fr; }
+}

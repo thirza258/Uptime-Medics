@@ -1,0 +1,102 @@
+/* Uptime Medics – design tokens, reset, typography, page chrome (header, footer, layout). */
+
+:root {
+    --mcd-yellow: #FFC72C;
+    --mcd-yellow-dark: #E5B327;
+    --mcd-red: #DA291C;
+    --green: #267B3C;
+    --dark: #27251F;
+    --white: #FFFFFF;
+    --gray: #F4F4F4;
+    --gray-2: #DDDDDD;
+    --muted: #5F5B54;
+    --shadow: 4px 4px 0 var(--dark);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: var(--gray);
+    color: var(--dark);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+:is(input, select, textarea, button, a, .monitor-row):focus-visible,
+.switch input:focus-visible + .slider {
+    outline: 3px solid var(--mcd-yellow-dark);
+    outline-offset: 2px;
+}
+
+/* ---- header ---------------------------------------------------------------------------- */
+.site-header {
+    background-color: var(--mcd-yellow);
+    border-bottom: 3px solid var(--dark);
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem 2rem;
+    flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 0.75rem; }
+.brand-mark {
+    width: 40px; height: 40px; flex: none;
+    background: var(--white);
+    border: 2px solid var(--dark);
+    border-radius: 4px;
+    box-shadow: 3px 3px 0 var(--dark);
+    display: grid; place-items: center;
+}
+.brand-mark::before {
+    content: "";
+    width: 22px; height: 22px;
+    background:
+        linear-gradient(var(--dark), var(--dark)) center / 6px 22px no-repeat,
+        linear-gradient(var(--dark), var(--dark)) center / 22px 6px no-repeat;
+}
+.site-header h1 { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase; line-height: 1.1; }
+.site-header h1 a { text-decoration: none; }
+.tagline { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.nav { display: flex; gap: 0.25rem; margin-left: auto; }
+.nav a {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border: 2px solid transparent;
+    border-radius: 3px;
+}
+.nav a:hover { border-color: var(--dark); }
+.nav a.active { background: var(--dark); color: var(--mcd-yellow); border-color: var(--dark); }
+
+.auth-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.auth-actions .who {
+    font-size: 0.85rem; font-weight: 700;
+    background: var(--white); border: 2px solid var(--dark); border-radius: 3px;
+    padding: 4px 10px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ---- layout ---------------------------------------------------------------------------- */
+.container { width: 100%; max-width: 960px; margin: 1.5rem auto 2rem; padding: 0 1rem; flex: 1; }
+
+.site-footer {
+    text-align: center; font-size: 0.75rem; color: var(--muted);
+    padding: 1rem; border-top: 2px solid var(--dark); background: var(--white);
+}
+
+@media (max-width: 720px) {
+    .site-header { padding: 0.8rem 1rem; }
+    .nav { order: 3; width: 100%; margin-left: 0; }
+}
