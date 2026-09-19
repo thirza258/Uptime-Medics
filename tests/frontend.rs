@@ -80,6 +80,12 @@ async fn pages_are_composed_from_layout_and_partials() {
             "Sign in | Uptime Medics",
             "id=\"auth-form\"",
         ),
+        (
+            "/courses",
+            "courses",
+            "Uptime Courses | Uptime Medics",
+            "id=\"courses-title\"",
+        ),
     ];
     for (path, page, title, marker) in pages {
         let res = client.get(path).await.assert_status(200);
@@ -141,7 +147,7 @@ async fn every_referenced_asset_and_module_import_resolves() {
     let app = TestApp::spawn().await;
     let client = app.client();
     let mut pending: VecDeque<String> = VecDeque::new();
-    for path in ["/", "/dashboard", "/login"] {
+    for path in ["/", "/dashboard", "/login", "/courses"] {
         let html = client.get(path).await.assert_status(200).text;
         for asset in attribute_paths(&html, "src")
             .into_iter()
@@ -189,9 +195,11 @@ async fn every_referenced_asset_and_module_import_resolves() {
         "/js/ui.js",
         "/js/auth.js",
         "/js/monitors.js",
+        "/js/history.js",
         "/js/pages/landing.js",
         "/js/pages/dashboard.js",
         "/js/pages/login.js",
+        "/js/pages/courses.js",
         "/css/components.css",
     ] {
         assert!(

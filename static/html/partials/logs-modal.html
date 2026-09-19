@@ -1,9 +1,14 @@
 <div class="modal-backdrop" id="logs-modal" hidden role="dialog" aria-modal="true" aria-labelledby="logs-title">
     <div class="modal wide">
         <div class="modal-head">
-            <h3 id="logs-title">Checks</h3>
+            <h3 id="logs-title">Uptime history</h3>
             <button type="button" class="close" data-close aria-label="Close">×</button>
         </div>
-        <div id="logs-content"></div>
+        <div class="history-ranges" role="group" aria-label="History period">
+            <button type="button" class="btn-secondary" data-history-range="24h" aria-pressed="true">24 hours</button>
+            <button type="button" class="btn-secondary" data-history-range="7d" aria-pressed="false">7 days</button>
+            <button type="button" class="btn-secondary" data-history-range="30d" aria-pressed="false">30 days</button>
+        </div>
+        <div id="logs-content" aria-busy="false"></div>
     </div>
 </div>

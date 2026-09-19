@@ -3,6 +3,12 @@
 use serde::{Deserialize, Deserializer};
 
 #[derive(Debug, Deserialize)]
+pub struct HistoryQuery {
+    #[serde(default)]
+    pub range: crate::domain::history::HistoryRange,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct RegisterRequest {
     pub email: String,
     pub password: String,

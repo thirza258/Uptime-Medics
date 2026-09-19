@@ -2,15 +2,17 @@
 
 use std::net::SocketAddr;
 
-use axum::extract::{ConnectInfo, Path, State};
+use axum::extract::rejection::QueryRejection;
+use axum::extract::{ConnectInfo, Path, Query, State};
 use axum::http::{HeaderMap, StatusCode};
 use url::Url;
 use uuid::Uuid;
 
-use crate::api::dto::{CreateMonitorRequest, UpdateMonitorRequest};
+use crate::api::dto::{CreateMonitorRequest, HistoryQuery, UpdateMonitorRequest};
 use crate::api::error::{ApiError, ApiResult, Json};
 use crate::api::extractors::{client_ip, AuthUser, OptionalAuthUser};
 use crate::domain::check_log::CheckLog;
+use crate::domain::history::HistoryResponse;
 use crate::domain::monitor::{Monitor, MonitorWithLatest, STATUS_PENDING};
 use crate::domain::user::CurrentUser;
 use crate::domain::validation as rules;
@@ -249,6 +251,41 @@ pub async fn logs(
     .fetch_all(&state.pool)
     .await?;
     Ok(axum::Json(logs))
+}
+
+pub async fn history(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    OptionalAuthUser(user): OptionalAuthUser,
+    query: Result<Query<HistoryQuery>, QueryRejection>,
+) -> ApiResult<axum::Json<HistoryResponse>> {
+    let monitor: Monitor = sqlx::query_as("SELECT * FROM monitors WHERE id = ?")
+        .bind(&id)
+        .fetch_optional(&state.pool)
+        .await?
+        .ok_or_else(not_found)?;
+    if matches!(visibility(&monitor, user.as_ref()), Visibility::Hidden) {
+        return Err(not_found());
+    }
+    let Query(query) = query.map_err(|_| {
+        ApiError::BadRequest("Invalid history range. Use 24h, 7d or 30d.".to_string())
+    })?;
+    let retention_hours = if monitor.is_anonymous {
+        Some(state.config.anon_retention_hours.max(1))
+    } else if state.config.registered_retention_days > 0 {
+        Some(state.config.registered_retention_days.saturating_mul(24))
+    } else {
+        None
+    };
+    let history = crate::services::history::load(
+        &state.pool,
+        &id,
+        query.range,
+        chrono::Utc::now(),
+        retention_hours,
+    )
+    .await?;
+    Ok(axum::Json(history))
 }
 
 // ---------------------------------------------------------------------------------------------

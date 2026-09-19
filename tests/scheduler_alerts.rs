@@ -414,7 +414,7 @@ async fn insert_log(pool: &SqlitePool, monitor_id: &str, checked_at: &str) {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn cleanup_prunes_old_logs_and_expired_sessions() {
-    let app = TestApp::spawn().await;
+    let app = TestApp::spawn_with(|config| config.anon_retention_hours = 48).await;
     let anon = app.client();
     let public = anon
         .create_monitor(json!({ "url": app.target.url("/ok"), "check_interval_seconds": 86400 }))

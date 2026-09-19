@@ -23,6 +23,7 @@ pub const PAGES: &[(&str, &str, &str)] = &[
         "Uptime Medics | Fast Minimalist Uptime Monitoring",
     ),
     ("/dashboard", "dashboard", "My Monitors | Uptime Medics"),
+    ("/courses", "courses", "Uptime Courses | Uptime Medics"),
     ("/login", "login", "Sign in | Uptime Medics"),
 ];
 

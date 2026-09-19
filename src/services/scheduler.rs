@@ -293,7 +293,7 @@ async fn cleanup_loop(state: AppState, mut shutdown: watch::Receiver<bool>) {
     }
 }
 
-/// Anonymous log retention (48 h by default), registered log retention, expired sessions and
+/// Anonymous log retention (30 days by default), registered log retention, expired sessions and
 /// `PRAGMA optimize`.
 pub async fn run_cleanup(state: &AppState) {
     let pool = &state.pool;

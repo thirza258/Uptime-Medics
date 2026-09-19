@@ -28,7 +28,7 @@ function renderTable() {
             <td class="muted">${m.alert_email ? esc(truncate(m.alert_email, 24)) : '—'}</td>
             <td><label class="switch" title="${m.is_active ? 'Pause' : 'Resume'} monitoring"><input type="checkbox" data-toggle="${esc(m.id)}" ${m.is_active ? 'checked' : ''} aria-label="Active"><span class="slider"></span></label></td>
             <td><div class="row-actions">
-                <button type="button" class="btn-secondary" data-logs="${esc(m.id)}" data-name="${esc(m.name)}">Logs</button>
+                <button type="button" class="btn-secondary" data-logs="${esc(m.id)}" data-name="${esc(m.name)}">History</button>
                 <button type="button" class="btn-secondary" data-edit="${esc(m.id)}">Edit</button>
                 <button type="button" class="btn-danger" data-delete="${esc(m.id)}" data-name="${esc(m.name)}">Delete</button>
             </div></td>

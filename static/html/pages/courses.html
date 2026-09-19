@@ -1,0 +1,173 @@
+<section class="card courses-intro" aria-labelledby="courses-title">
+    <p class="course-eyebrow">The uptime field guide</p>
+    <h2 id="courses-title">Keep your website steady.</h2>
+    <p>Learn to prevent common outages, recover faster, and measure the result. Five practical courses take you from a single server to a more resilient deployment.</p>
+    <div class="course-intro-meta"><span class="badge">5 free courses</span><span class="badge">Beginner → intermediate</span><a href="/dashboard">Put your learning to work →</a></div>
+</section>
+
+<nav class="course-catalog" aria-label="Choose a course">
+    <a href="#vps"><span class="course-number">01 / VPS</span><strong>Keep a VPS running</strong><span>Service recovery, capacity &amp; safe releases</span><small>3 lessons · 25 min with practice →</small></a>
+    <a href="#cloud"><span class="course-number">02 / Cloud</span><strong>Design for failure</strong><span>Health checks, redundancy &amp; recovery</span><small>3 lessons · 25 min with practice →</small></a>
+    <a href="#self-hosting"><span class="course-number">03 / Self hosting</span><strong>Make home hosting reliable</strong><span>Power, containers &amp; tested backups</span><small>3 lessons · 25 min with practice →</small></a>
+    <a href="#cloudflare-tunnel"><span class="course-number">04 / Networking</span><strong>Set up Cloudflare Tunnel</strong><span>A stable public hostname for your service</span><small>3 lessons · 20 min with practice →</small></a>
+    <a href="#nginx-certbot"><span class="course-number">05 / HTTPS</span><strong>Nginx + Certbot on a VPS</strong><span>Reverse proxy, certificates &amp; renewal</span><small>3 lessons · 30 min with practice →</small></a>
+</nav>
+
+<div class="course-progress" id="course-progress" hidden>
+    <strong id="course-progress-count" role="status">0 of 5 courses completed</strong>
+    <span class="hint">Progress is saved in this browser.</span>
+</div>
+
+<details class="card course" id="vps">
+    <summary><span class="course-number">01 / VPS</span><h2>Keep a VPS running</h2><span class="hint">Service recovery, capacity, and safe releases</span></summary>
+    <div class="course-body">
+        <p class="course-prerequisites"><strong>Before you start:</strong> An Ubuntu server using systemd, sudo access, and a working application. The example assumes your executable is at <code>/opt/my-web/server</code>; adapt paths and the start command to your app.</p>
+        <section><h3>1. Give the process a supervisor</h3>
+            <p>Create a dedicated <code>webapp</code> service account, give it access to the app and its data directory, and put your runtime settings in <code>/etc/my-web.env</code>. Save this as <code>/etc/systemd/system/my-web.service</code>:</p>
+            <pre><code>[Unit]
+Description=My web application
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=exec
+User=webapp
+WorkingDirectory=/opt/my-web
+EnvironmentFile=/etc/my-web.env
+ExecStart=/opt/my-web/server
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+            <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable --now my-web
+sudo systemctl status my-web
+sudo journalctl -u my-web -n 50 --no-pager</code></pre>
+            <p>The restart policy recovers a crashed process. A process that hangs while still running needs a health check and an alert. Fix repeated crashes instead of hiding them in a restart loop. <a href="https://manpages.ubuntu.com/manpages/noble/man5/systemd.service.5.html">systemd service reference</a></p>
+        </section>
+        <section><h3>2. Watch the limits before they cause an outage</h3>
+            <p>Check <code>df -h</code>, <code>df -i</code>, <code>free -h</code>, and <code>uptime</code>. Investigate growing logs, exhausted inodes, memory pressure, and slow responses. Set capacity alerts with enough headroom to act, rotate logs, and schedule operating system updates and required reboots.</p>
+        </section>
+        <section><h3>3. Make every release reversible</h3>
+            <p>Keep the previous release and a tested data backup. Validate configuration, deploy to staging, then check a meaningful health endpoint before directing traffic to the new version. Plan database migrations so the previous app can still run, or prepare a separate recovery procedure.</p>
+            <div class="course-lab"><strong>Practice:</strong> On a staging VPS, reboot and confirm the service starts automatically. Monitor it from another machine. Record a failed check, recover the service, and compare the 24-hour history. Write down the rollback command and the person who receives alerts.</div>
+        </section>
+        <button type="button" class="btn-secondary course-complete" data-course-complete="vps" aria-pressed="false" hidden>Mark complete</button>
+    </div>
+</details>
+
+<details class="card course" id="cloud">
+    <summary><span class="course-number">02 / Cloud</span><h2>Design for failure</h2><span class="hint">Health checks, redundancy, and recovery</span></summary>
+    <div class="course-body">
+        <p class="course-prerequisites"><strong>Before you start:</strong> A cloud account and a staging application. Use your provider's equivalent load balancer, availability zones, metrics, and backup tools; check costs before creating resources.</p>
+        <section><h3>1. Find your single points of failure</h3>
+            <p>Draw the request path: DNS → load balancer → app → database. Identify which component can bring the whole site down. Where the availability target justifies it, use at least two app instances in separate failure zones, health checks that remove unhealthy instances, and enough spare capacity to lose one instance.</p>
+        </section>
+        <section><h3>2. Separate app recovery from data recovery</h3>
+            <p>Keep sessions and uploads out of disposable app disks. Choose storage with a recovery plan, encrypted backups, and restore tests. Multiple app replicas do not make a single database highly available. This app's SQLite file belongs on persistent local storage; do not put one WAL database on a shared network filesystem to connect replicas.</p>
+            <p>Set a recovery time objective (how long recovery can take) and a recovery point objective (how much recent data can be lost). Measure both during a restore drill. See the <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html">AWS reliability guidance</a> and <a href="https://www.sqlite.org/wal.html">SQLite WAL constraints</a>.</p>
+        </section>
+        <section><h3>3. Verify the path your visitors use</h3>
+            <p>Monitor the public hostname from outside the deployment. A cached landing page can stay green while the app fails: use a non-cached health route that reflects the dependencies you need. Watch latency and errors during gradual releases, and roll back when your thresholds are crossed.</p>
+            <div class="course-lab"><strong>Practice:</strong> In staging, remove one app instance from service. Check that the load balancer stops routing to it and the remaining capacity serves requests. Restore a backup into an isolated environment, time the recovery, and review 7-day uptime before and after your changes.</div>
+        </section>
+        <button type="button" class="btn-secondary course-complete" data-course-complete="cloud" aria-pressed="false" hidden>Mark complete</button>
+    </div>
+</details>
+
+<details class="card course" id="self-hosting">
+    <summary><span class="course-number">03 / Self hosting</span><h2>Make home hosting reliable</h2><span class="hint">Power, containers, and tested backups</span></summary>
+    <div class="course-body">
+        <p class="course-prerequisites"><strong>Before you start:</strong> A home server or small dedicated machine, access to its router, and persistent storage for application data.</p>
+        <section><h3>1. Include the network and the power supply</h3>
+            <p>Reserve the server's LAN address, prefer wired networking, and plan for power loss. A UPS should cover the server and network equipment, with a tested graceful shutdown. Check ISP restrictions and CGNAT; an outbound tunnel can publish a service without router port forwarding. Keep an external monitor so a local power or Internet outage can still be reported.</p>
+        </section>
+        <section><h3>2. Restart the app without losing its data</h3>
+            <p>For Docker Compose, use a persistent volume for data and an appropriate restart policy. Uptime Medics already includes both in its Compose file. Check the stack and its logs:</p>
+            <pre><code>docker compose up -d
+docker compose ps
+docker compose logs --tail=100 uptime-medics</code></pre>
+            <p><code>restart: unless-stopped</code> restarts a container after it exits, unless it was deliberately stopped. A Docker health check marks a container unhealthy; it does not itself restart a running container. Investigate that state and add supervised recovery if needed. <a href="https://docs.docker.com/engine/containers/start-containers-automatically/">Docker restart policy reference</a></p>
+        </section>
+        <section><h3>3. Prove that backups can restore service</h3>
+            <p>Back up configuration, secrets, and database data to a separate machine with restricted access. For a live SQLite database, use its backup mechanism rather than copying just the main file while WAL writes are active. On a host with the SQLite CLI and access to the database, adapt these paths:</p>
+            <pre><code>sqlite3 /path/to/uptime_medics.db ".backup '/path/to/backup.db'"
+sqlite3 /path/to/backup.db "PRAGMA integrity_check;"</code></pre>
+            <p>A successful integrity check should return <code>ok</code>. Also restore the backup into a separate test instance and confirm that monitors and history are present. For the Compose named volume, run the backup from a tool with access to that volume. <a href="https://www.sqlite.org/backup.html">SQLite backup reference</a></p>
+            <div class="course-lab"><strong>Practice:</strong> Test a controlled reboot during a maintenance window. Verify container startup, tunnel or proxy connectivity, and an off-site alert. Restore a backup separately and compare the 30-day history to spot repeated power or network failures.</div>
+        </section>
+        <button type="button" class="btn-secondary course-complete" data-course-complete="self-hosting" aria-pressed="false" hidden>Mark complete</button>
+    </div>
+</details>
+
+<details class="card course" id="cloudflare-tunnel">
+    <summary><span class="course-number">04 / Networking</span><h2>Set up Cloudflare Tunnel</h2><span class="hint">Publish an app on a VPS or home server</span></summary>
+    <div class="course-body">
+        <p class="course-prerequisites"><strong>Before you start:</strong> A domain managed in Cloudflare, a Linux server with sudo access, and an app reachable at <code>http://127.0.0.1:8080</code> from that server. Here, cloudflared runs on the host.</p>
+        <section><h3>1. Create a persistent tunnel</h3>
+            <p>In Cloudflare's dashboard, open <strong>Networking → Tunnels</strong>, create a tunnel, and select your server's operating system and architecture. Run the provided cloudflared installation and service commands. Keep the tunnel token private. Confirm that the connector becomes healthy. <a href="https://developers.cloudflare.com/tunnel/get-started/">Cloudflare setup instructions</a></p>
+            <pre><code>curl --fail http://127.0.0.1:8080/api/health
+sudo systemctl status cloudflared
+sudo journalctl -u cloudflared -n 50 --no-pager</code></pre>
+        </section>
+        <section><h3>2. Route your hostname to the app</h3>
+            <p>Under the tunnel's <strong>Routes</strong>, add a <strong>Published application</strong>. Map <code>status.example.com</code> to <code>http://127.0.0.1:8080</code>, replacing the example hostname with your own. This gives visitors an HTTPS URL. A temporary Quick Tunnel is for development; use your named tunnel for a stable hostname.</p>
+            <p>Bind the app's host port to loopback when only cloudflared needs it. For Docker, publish <code>127.0.0.1:8080:8080</code>. If cloudflared runs inside a container, use the app's service name on a shared Docker network instead of localhost.</p>
+        </section>
+        <section><h3>3. Keep the connector and origin available</h3>
+            <p>Allow outbound TCP/UDP port 7844 to Cloudflare. Preserve your management access when changing firewall rules. For an HTTPS origin, configure the correct origin certificate name and keep certificate verification enabled. A second connector on another host improves connector resilience only if it can also reach a working app. <a href="https://developers.cloudflare.com/tunnel/configuration/">Tunnel availability and firewall guide</a></p>
+            <p>Set this app's <code>PUBLIC_BASE_URL</code> to the public HTTPS URL and restart it. Check that monitoring traffic can reach the health route without an unexpected login page or cache. Protect private applications with an access policy suited to their users.</p>
+            <div class="course-lab"><strong>Practice:</strong> Visit <code>https://status.example.com/api/health</code> from another network. Reboot a staging host, verify the tunnel reconnects automatically, and inspect the 24-hour history. If you see a 502, check the app's local address, port, and logs first.</div>
+        </section>
+        <button type="button" class="btn-secondary course-complete" data-course-complete="cloudflare-tunnel" aria-pressed="false" hidden>Mark complete</button>
+    </div>
+</details>
+
+<details class="card course" id="nginx-certbot">
+    <summary><span class="course-number">05 / HTTPS</span><h2>Nginx + Certbot on a VPS</h2><span class="hint">Serve a public HTTPS site and test certificate renewal</span></summary>
+    <div class="course-body">
+        <p class="course-prerequisites"><strong>Before you start:</strong> A fresh Ubuntu VPS with sudo access and snapd installed, a domain, and an app listening at <code>127.0.0.1:8080</code>. Replace <code>status.example.com</code> throughout. This course uses direct DNS to the VPS; the tunnel course is another way to publish your app.</p>
+        <section><h3>1. Prepare DNS and the reverse proxy</h3>
+            <p>Point the domain's A record to the VPS; add an AAAA record only if IPv6 is configured. For this setup, use DNS-only mode if the zone is on Cloudflare. Allow inbound TCP 80 and 443 through both the provider firewall and the host firewall, keeping SSH access. Bind the application port to loopback.</p>
+            <pre><code>sudo apt update
+sudo apt install nginx
+sudo systemctl enable --now nginx</code></pre>
+            <p>Save the following as <code>/etc/nginx/sites-available/my-web</code>:</p>
+            <pre><code>server {
+    listen 80;
+    server_name status.example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+            <p>For IPv6, also add <code>listen [::]:80;</code>. The forwarded client address above assumes Nginx is the only public proxy. Enable the site, validate it, and reload only when validation succeeds:</p>
+            <pre><code>sudo ln -s /etc/nginx/sites-available/my-web /etc/nginx/sites-enabled/my-web
+sudo nginx -t &amp;&amp; sudo systemctl reload nginx
+curl --fail http://status.example.com/api/health</code></pre>
+            <p>A reload lets existing requests finish. If validation fails, correct the configuration before applying it. <a href="https://nginx.org/en/docs/beginners_guide.html">Nginx reverse proxy guide</a></p>
+        </section>
+        <section><h3>2. Issue a trusted HTTPS certificate</h3>
+            <p>On this fresh server, install Certbot through snap and use its Nginx plugin. If Certbot is already installed another way, follow its migration instructions first.</p>
+            <pre><code>sudo snap install --classic certbot
+sudo /snap/bin/certbot --nginx --redirect -d status.example.com
+curl --fail https://status.example.com/api/health</code></pre>
+            <p>Follow the email and terms prompts. Certbot updates the matching Nginx server block. Keep port 80 reachable for HTTP-01 renewals. When inbound port 80 cannot be used, choose an automated DNS-01 integration instead. Set Uptime Medics' <code>PUBLIC_BASE_URL=https://status.example.com</code> and restart the app. <a href="https://ubuntu.com/server/docs/how-to/security/obtain-tls-certificates/">Ubuntu certificate setup and renewal</a></p>
+        </section>
+        <section><h3>3. Test renewal and monitor the result</h3>
+            <pre><code>sudo systemctl status snap.certbot.renew.timer
+sudo /snap/bin/certbot renew --dry-run
+sudo nginx -t</code></pre>
+            <p>Confirm the timer is active and the simulated renewal succeeds. If it fails, inspect <code>/var/log/letsencrypt/letsencrypt.log</code>, DNS, and firewall access. Repeat the test after DNS or proxy changes, and monitor the public HTTPS endpoint.</p>
+            <div class="course-lab"><strong>Practice:</strong> Confirm that HTTP redirects to HTTPS, the health route returns the expected status, and renewal passes. Add the HTTPS URL to Uptime Medics, configure an alert email, and use the 7-day and 30-day views to evaluate reliability over time.</div>
+        </section>
+        <button type="button" class="btn-secondary course-complete" data-course-complete="nginx-certbot" aria-pressed="false" hidden>Mark complete</button>
+    </div>
+</details>

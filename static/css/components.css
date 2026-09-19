@@ -189,6 +189,33 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 .ok-text { color: var(--green); font-weight: 700; }
 .fail-text { color: var(--mcd-red); font-weight: 700; }
 
+/* ---- uptime history -------------------------------------------------------------------- */
+.history-ranges { display: flex; gap: 8px; margin-bottom: 1rem; }
+.history-ranges button[aria-pressed="true"] { background: var(--mcd-yellow); }
+.history-window, .history-explainer, .history-observed { margin-bottom: 1rem; }
+.history-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.history-stats > div { border: 2px solid var(--dark); border-radius: 3px; padding: 10px; background: var(--gray); }
+.history-stats dt { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+.history-stats dd { font-size: 1.5rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.history-stats small { font-size: 0.8rem; }
+.history-notice { background: #fff9e6; border-left: 4px solid var(--mcd-yellow-dark); padding: 10px; margin-bottom: 1rem; font-size: 0.85rem; }
+.history-chart { display: flex; gap: 4px; height: 84px; }
+.history-bar { flex: 1; min-width: 0; padding: 0; border: 1px solid var(--dark); border-radius: 2px; background: var(--mcd-red); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+.history-success { display: block; width: 100%; background: var(--green); }
+.no-data { background: repeating-linear-gradient(135deg, var(--gray-2), var(--gray-2) 4px, var(--gray) 4px, var(--gray) 8px); }
+.history-axis { display: flex; justify-content: space-between; gap: 12px; font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+.history-axis span:last-child { text-align: right; }
+.history-detail { min-height: 3em; margin: 10px 0; }
+.history-checks-title { font-size: 0.85rem; margin: 1rem 0 0.5rem; }
+#logs-content td:last-child { overflow-wrap: anywhere; }
+
+@media (max-width: 520px) {
+    .modal { padding: 1rem; }
+    .history-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .history-ranges button { flex: 1; padding: 8px 4px; }
+    .history-chart { gap: 2px; }
+}
+
 /* ---- toasts ---------------------------------------------------------------------------- */
 .toasts { position: fixed; right: 1rem; bottom: 1rem; display: flex; flex-direction: column; gap: 8px; z-index: 100; max-width: min(380px, calc(100vw - 2rem)); }
 .toast {

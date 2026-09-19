@@ -1,7 +1,7 @@
 # Uptime Medics
 
 Lightweight, high-performance uptime monitoring: a Rust backend (`axum` + `tokio` + `reqwest` +
-`sqlx`/SQLite + `lettre`) and a zero-dependency single-file HTML/JavaScript frontend.
+`sqlx`/SQLite + `lettre`) and a zero-dependency HTML/JavaScript frontend.
 
 * Probe any HTTP endpoint with `HEAD`, `GET`, `POST`, `PATCH`, `PUT`, `DELETE` or `OPTIONS`,
   custom headers, a request payload, a strict timeout and an exact expected status code.
@@ -11,8 +11,12 @@ Lightweight, high-performance uptime monitoring: a Rust backend (`axum` + `tokio
   deleted from a dashboard.
 * **SMTP alerts** when a monitor fails twice in a row, plus recovery notifications, with
   exponential-backoff retries and flap suppression.
+* **Uptime history** for the last 24 hours, 7 days, and 30 days, with SQLite-backed summaries,
+  interactive charts, and recent checks for public and private monitors.
+* **Free courses** at `/courses`: VPS reliability, cloud resilience, self hosting, Cloudflare
+  Tunnel, and Nginx with Certbot on a VPS, including configuration examples and practice tasks.
 * **SSRF guardrails**, per-IP rate limiting for anonymous submissions, batched SQLite writes and
-  automatic 48-hour log retention for anonymous monitors.
+  automatic 30-day log retention by default.
 
 ## Quick start with Docker
 
@@ -93,7 +97,7 @@ Everything is configured through environment variables (a `.env` file is loaded 
 | `PROBE_CONCURRENCY` | `100` | Maximum simultaneous probes. |
 | `SCHEDULER_TICK_MS` | `1000` | How often due monitors are collected. |
 | `LOG_FLUSH_INTERVAL_SECONDS` / `LOG_BATCH_SIZE` | `5` / `100` | Check logs are written in batch transactions of up to `LOG_BATCH_SIZE` rows every flush interval. |
-| `ANON_LOG_RETENTION_HOURS` | `48` | Daily cleanup deletes older check logs of anonymous monitors. |
+| `ANON_LOG_RETENTION_HOURS` | `720` | Daily cleanup deletes older anonymous checks. Keep at least 720 hours for 30-day history. |
 | `REGISTERED_LOG_RETENTION_DAYS` | `30` | Same for registered monitors (`0` keeps them forever). |
 | `ANON_RATE_LIMIT_PER_HOUR` | `10` | Anonymous monitor creations allowed per client IP (token bucket). |
 | `ALLOW_PRIVATE_TARGETS` | `false` | Permit private/loopback targets (disables SSRF protection; LAN self-hosting only). |
@@ -118,6 +122,7 @@ All endpoints speak JSON. Errors look like `{"error": "bad_request", "message": 
 | `PATCH` | `/api/monitors/:id` | cookie | Edit an owned monitor (`is_active` pauses/resumes). |
 | `DELETE` | `/api/monitors/:id` | cookie | Delete an owned monitor and its history. |
 | `GET` | `/api/monitors/:id/logs` | optional | Last 50 checks (public monitors or owner). |
+| `GET` | `/api/monitors/:id/history?range=24h` | optional | Full-period uptime summary, chart buckets and latest 50 checks in that period. `range`: `24h` (default), `7d`, or `30d`. Public monitors or owner only. |
 | `GET` | `/api/health` | – | Liveness/readiness (checks the database). |
 
 Create-monitor payload (only `url` is required):
@@ -138,6 +143,35 @@ Create-monitor payload (only `url` is required):
 
 `headers` may be given as a JSON object or as a string containing one. Limits: interval 30 s to
 24 h, timeout 1–60 s, expected status 100–599, body ≤ 64 KB, ≤ 25 headers.
+
+### Uptime history and courses
+
+Open a community monitor, a recent submission, or **History** on the dashboard to switch between
+24 hours, 7 days, and 30 days. Each view includes uptime, total/failed checks, average latency,
+and a chart whose intervals can be selected with the mouse or keyboard.
+
+The history API aggregates **all recorded checks** in the selected rolling UTC window, not just
+the latest 50 shown in the detail table. Uptime is `100 × successful checks / total checks`;
+latency is averaged across all checks, including failures. It is a sampled check success rate,
+not a measurement of exact outage duration. Missing checks and pauses do not count as success
+or failure. Empty periods have `null` uptime and latency, displayed as “No data”.
+
+Responses contain `range`, `start`, `end`, `bucket_seconds`, `retention_hours`, `summary`,
+`buckets`, and `recent_checks`. The 24-hour, 7-day and 30-day charts use 24 one-hour, 28 six-hour,
+and 30 one-day buckets respectively. Window and bucket boundaries are `(start, end]`. Summary
+and bucket fields include `total_checks`, `successful_checks`, `failed_checks`, `uptime_percent`,
+`avg_response_time_ms`, `first_checked_at`, and `last_checked_at`. Timestamps are UTC in the API
+and displayed in the browser's local time. Unsupported ranges return a JSON `400` error.
+
+History uses the existing indexed SQLite `check_logs` table and survives app restarts; no new
+database or schema migration is needed. Both public and private monitors retain 30 days by
+default. Existing explicit retention settings are respected; a shorter setting is called out in
+the history view. New monitors accumulate history from their first check, and previously pruned
+data cannot be recovered. Fresh checks appear after the normal log flush (5 seconds by default).
+
+The public **Courses** page includes five courses, each with three lessons, prerequisites,
+practice tasks, and official reference links. Course completion is optional and remembered in
+the current browser; monitoring history is stored on the server in SQLite.
 
 ## How it works
 
@@ -164,12 +198,13 @@ Create-monitor payload (only `url` is required):
   Anonymous creations are limited to 10 per hour per IP. Public monitor details never expose
   custom headers, payloads or alert emails. Security headers and a CSP (`script-src 'self'`, no
   inline scripts) are set on all responses.
-* **Frontend** – three server-composed pages (landing `/`, dashboard `/dashboard`, login
-  `/login`) built from `static/html/layout.html`, one fragment per page and shared partials
+* **Frontend** – four server-composed pages (landing `/`, dashboard `/dashboard`, login
+  `/login`, courses `/courses`) built from `static/html/layout.html`, one fragment per page and shared partials
   (header, footer, monitor form, modals). Plain CSS files and vanilla ES modules, no frameworks,
   no build step. The whole `static/` tree is embedded into the binary for release builds; debug
   builds read it from disk so edits show up on refresh. The community list refreshes every 10 s;
-  the dashboard offers pause/edit/delete and a per-monitor check history with a latency chart.
+  the dashboard offers pause/edit/delete and per-monitor uptime history for 24 hours, 7 days,
+  and 30 days.
 
 ## Development
 
@@ -193,6 +228,7 @@ that captures the emails the app sends.
 | `tests/api_monitors.rs` | Creation defaults and validation, public redaction, ownership, PATCH/DELETE, SSRF blocks, rate limiting. |
 | `tests/api_public.rs` | Health, security headers, the random pool, stats. |
 | `tests/frontend.rs` | Page composition (layout + partials), every referenced asset and module import resolves, asset types, `html/` never exposed. |
+| `tests/history.rs` | Full-window aggregation, UTC boundaries, empty periods, visibility, retention and SQLite persistence. |
 | `tests/scheduler_alerts.rs` | Probe loop, incident detection (2 failures), alert and recovery emails, flap suppression, pause/resume, batching, shutdown flush, cleanup. |
 | `tests/security.rs` | SSRF block lists and DNS filtering, rate limiter, argon2/JWT/cookie primitives. |
 | `tests/domain.rs` | Incident state machine, entity helpers and serialisation, every validation rule. |
@@ -228,6 +264,7 @@ src/
 │   ├── probe.rs             HTTP probe execution
 │   ├── scheduler.rs         probe loop, batched log writer, daily cleanup
 │   ├── alerts.rs            DOWN/recovery notifications, flap detection
+│   ├── history.rs           SQLite aggregation for rolling uptime windows
 │   └── session.rs           session create / resolve / revoke
 ├── security/                cross-cutting protection
 │   ├── auth.rs              argon2id hashing, JWT tokens, cookie attributes
@@ -241,6 +278,7 @@ src/
     ├── monitor.rs           Monitor and its read models, statuses, allowed methods
     ├── user.rs              User, CurrentUser, UserResponse
     ├── check_log.rs         CheckLog, CheckLogInsert
+    ├── history.rs           history ranges, summaries and chart buckets
     ├── stats.rs             StatsResponse
     └── validation.rs        input rules (methods, intervals, headers, emails, passwords)
 
@@ -253,22 +291,23 @@ Makefile                     developer tasks (`make help`)
 static/                      frontend, embedded into the binary (src/api/assets.rs)
 ├── html/
 │   ├── layout.html          document shell: <head>, header, {{content}}, footer, page module
-│   ├── pages/               landing.html, dashboard.html, login.html (one fragment per page)
+│   ├── pages/               landing, dashboard, login, courses (one HTML fragment per page)
 │   └── partials/            header, footer, monitor-form, logs-modal, edit-modal ({{> name}})
 ├── css/
 │   ├── base.css             design tokens, reset, header/footer/layout
 │   ├── components.css       cards, forms, buttons, badges, rows, tables, modals, toasts
-│   └── pages/               landing.css, dashboard.css, login.css
+│   └── pages/               landing.css, dashboard.css, login.css, courses.css
 ├── js/
 │   ├── api.js               fetch wrapper + ApiError
 │   ├── ui.js                escaping/formatting, badges, monitor rows, toasts, modals, storage
 │   ├── auth.js              current user, header rendering, logout, auth guard
-│   ├── monitors.js          shared create form and check-history modal
-│   └── pages/               landing.js, dashboard.js, login.js (entry modules)
+│   ├── monitors.js          shared create form and history entry points
+│   ├── history.js           period selection, uptime chart and recent checks
+│   └── pages/               landing.js, dashboard.js, login.js, courses.js (entry modules)
 └── img/favicon.svg
 ```
 
-Pages are served at `/`, `/dashboard` and `/login`; files under `css/`, `js/` and `img/` are
+Pages are served at `/`, `/dashboard`, `/login` and `/courses`; files under `css/`, `js/` and `img/` are
 served as-is (`html/` fragments are never exposed). Adding a page means adding
 `html/pages/<name>.html`, `css/pages/<name>.css`, `js/pages/<name>.js` and one entry in
 `PAGES` in `src/api/assets.rs`.

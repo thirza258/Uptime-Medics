@@ -37,6 +37,7 @@ pub fn router(state: AppState) -> Router {
                 .delete(handlers::monitors::delete),
         )
         .route("/monitors/{id}/logs", get(handlers::monitors::logs))
+        .route("/monitors/{id}/history", get(handlers::monitors::history))
         .fallback(api_not_found);
 
     let mut router = Router::new();

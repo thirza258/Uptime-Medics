@@ -63,7 +63,7 @@ impl Default for Config {
             scheduler_tick: Duration::from_millis(1000),
             log_flush_interval: Duration::from_secs(5),
             log_batch_size: 100,
-            anon_retention_hours: 48,
+            anon_retention_hours: 30 * 24,
             registered_retention_days: 30,
             rate_limit_per_hour: 10,
             trust_proxy_headers: false,
