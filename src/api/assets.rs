@@ -27,6 +27,9 @@ pub const PAGES: &[(&str, &str, &str)] = &[
     ("/login", "login", "Sign in | Uptime Medics"),
 ];
 
+/// Specific public root files served directly.
+const PUBLIC_FILES: &[&str] = &["robots.txt", "sitemap.xml"];
+
 /// Only these directories are served as raw files; `html/` fragments are never exposed.
 const PUBLIC_PREFIXES: &[&str] = &["css/", "js/", "img/"];
 const MAX_PARTIAL_EXPANSIONS: usize = 200;
@@ -87,12 +90,57 @@ fn page_response(html: String) -> Response {
     ([(header::CACHE_CONTROL, "no-cache")], Html(html)).into_response()
 }
 
+/// Serve robots.txt for search engines.
+pub async fn serve_robots() -> Response {
+    match Assets::get("robots.txt") {
+        Some(file) => (
+            [
+                (header::CONTENT_TYPE, "text/plain; charset=utf-8"),
+                (
+                    header::CACHE_CONTROL,
+                    if cfg!(debug_assertions) {
+                        "no-cache"
+                    } else {
+                        "public, max-age=86400"
+                    },
+                ),
+            ],
+            file.data.into_owned(),
+        )
+            .into_response(),
+        None => not_found(),
+    }
+}
+
+/// Serve sitemap.xml for search engines.
+pub async fn serve_sitemap() -> Response {
+    match Assets::get("sitemap.xml") {
+        Some(file) => (
+            [
+                (header::CONTENT_TYPE, "application/xml; charset=utf-8"),
+                (
+                    header::CACHE_CONTROL,
+                    if cfg!(debug_assertions) {
+                        "no-cache"
+                    } else {
+                        "public, max-age=86400"
+                    },
+                ),
+            ],
+            file.data.into_owned(),
+        )
+            .into_response(),
+        None => not_found(),
+    }
+}
+
 /// Fallback handler: serve `css/`, `js/` and `img/` files, 404 for everything else.
 pub async fn asset_or_404(uri: Uri) -> Response {
     let path = uri.path().trim_start_matches('/');
-    let allowed = PUBLIC_PREFIXES
-        .iter()
-        .any(|prefix| path.starts_with(prefix));
+    let allowed = PUBLIC_FILES.contains(&path)
+        || PUBLIC_PREFIXES
+            .iter()
+            .any(|prefix| path.starts_with(prefix));
     if !allowed
         || path
             .split('/')
@@ -103,7 +151,10 @@ pub async fn asset_or_404(uri: Uri) -> Response {
     match Assets::get(path) {
         Some(file) => {
             let mime = file.metadata.mimetype();
-            let content_type = if mime.starts_with("text/") || mime == "application/javascript" {
+            let content_type = if mime.starts_with("text/")
+                || mime == "application/javascript"
+                || mime == "application/xml"
+            {
                 format!("{mime}; charset=utf-8")
             } else {
                 mime.to_string()
@@ -162,5 +213,14 @@ mod tests {
                 "{page}.js"
             );
         }
+    }
+
+    #[test]
+    fn static_seo_files_exist() {
+        assert!(Assets::get("robots.txt").is_some(), "robots.txt must exist");
+        assert!(
+            Assets::get("sitemap.xml").is_some(),
+            "sitemap.xml must exist"
+        );
     }
 }

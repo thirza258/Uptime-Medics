@@ -53,6 +53,8 @@ pub fn router(state: AppState) -> Router {
             "/index.html",
             get(move || async move { assets::serve_page(landing, landing_title) }),
         )
+        .route("/robots.txt", get(assets::serve_robots))
+        .route("/sitemap.xml", get(assets::serve_sitemap))
         .nest("/api", api)
         .fallback(assets::asset_or_404)
         .layer(axum::middleware::from_fn(middleware::security_headers))

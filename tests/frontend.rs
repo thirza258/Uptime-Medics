@@ -257,3 +257,35 @@ async fn static_files_have_types_and_unknown_paths_are_404() {
     }
     app.finish().await;
 }
+
+#[tokio::test]
+async fn robots_and_sitemap_are_served() {
+    let app = TestApp::spawn().await;
+    let client = app.client();
+
+    let robots = client.get("/robots.txt").await.assert_status(200);
+    assert!(robots
+        .header("content-type")
+        .unwrap()
+        .starts_with("text/plain"));
+    assert!(robots.text.contains("User-agent: *"));
+    assert!(robots
+        .text
+        .contains("Sitemap: https://uptime.nevatal.id/sitemap.xml"));
+    assert!(robots.text.contains("Disallow: /api/"));
+    assert!(robots.text.contains("Disallow: /dashboard"));
+
+    let sitemap = client.get("/sitemap.xml").await.assert_status(200);
+    assert!(sitemap.header("content-type").unwrap().contains("xml"));
+    assert!(sitemap
+        .text
+        .contains("<loc>https://uptime.nevatal.id/</loc>"));
+    assert!(sitemap
+        .text
+        .contains("<loc>https://uptime.nevatal.id/login</loc>"));
+    assert!(sitemap
+        .text
+        .contains("http://www.sitemaps.org/schemas/sitemap/0.9"));
+
+    app.finish().await;
+}

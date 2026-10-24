@@ -1,0 +1,11 @@
+# robots.txt for https://uptime.nevatal.id/
+User-agent: *
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Allow: /
+Allow: /css/
+Allow: /js/
+Allow: /img/
+Disallow: /api/
+Disallow: /dashboard
+
+Sitemap: https://uptime.nevatal.id/sitemap.xml

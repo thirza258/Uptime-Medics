@@ -15,6 +15,10 @@ path = "src/lib.rs"
 name = "uptime-medics"
 path = "src/main.rs"
 
+[[bin]]
+name = "uptime-medics-seed"
+path = "src/bin/seed.rs"
+
 [dependencies]
 anyhow = "1"
 argon2 = { version = "0.5", features = ["std"] }
