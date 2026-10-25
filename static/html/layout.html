@@ -9,12 +9,33 @@
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/pages/{{page}}.css">
+    <meta name="monetag" content="a5692aee6f7c7b3308d722bdad7c1946">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3592604467898331"
+         crossorigin="anonymous"></script>
 </head>
 <body data-page="{{page}}">
 {{> header}}
 <main class="container" id="main">
 {{content}}
 </main>
+
+<!-- Ad Banner -->
+<div class="site-ad-container" style="text-align:center;margin:20px auto;max-width:100%;overflow:hidden;">
+  <!-- Google AdSense -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-3592604467898331"
+       data-ad-slot="8935247270"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <!-- Native Banner -->
+  <script async="async" data-cfasync="false" src="https://bauval.org/21/9179af82b37310b591ce091500da6151"></script>
+  <div id="container-9179af82b37310b591ce091500da6151"></div>
+</div>
+
 {{> footer}}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script type="module" src="/js/pages/{{page}}.js"></script>

@@ -54,6 +54,7 @@ pub fn router(state: AppState) -> Router {
             get(move || async move { assets::serve_page(landing, landing_title) }),
         )
         .route("/robots.txt", get(assets::serve_robots))
+        .route("/ads.txt", get(assets::serve_ads_txt))
         .route("/sitemap.xml", get(assets::serve_sitemap))
         .nest("/api", api)
         .fallback(assets::asset_or_404)

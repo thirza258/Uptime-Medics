@@ -28,7 +28,7 @@ pub const PAGES: &[(&str, &str, &str)] = &[
 ];
 
 /// Specific public root files served directly.
-const PUBLIC_FILES: &[&str] = &["robots.txt", "sitemap.xml"];
+const PUBLIC_FILES: &[&str] = &["robots.txt", "sitemap.xml", "ads.txt"];
 
 /// Only these directories are served as raw files; `html/` fragments are never exposed.
 const PUBLIC_PREFIXES: &[&str] = &["css/", "js/", "img/"];
@@ -88,6 +88,28 @@ pub fn serve_page(page: &'static str, title: &'static str) -> Response {
 
 fn page_response(html: String) -> Response {
     ([(header::CACHE_CONTROL, "no-cache")], Html(html)).into_response()
+}
+
+/// Serve ads.txt for ad networks.
+pub async fn serve_ads_txt() -> Response {
+    match Assets::get("ads.txt") {
+        Some(file) => (
+            [
+                (header::CONTENT_TYPE, "text/plain; charset=utf-8"),
+                (
+                    header::CACHE_CONTROL,
+                    if cfg!(debug_assertions) {
+                        "no-cache"
+                    } else {
+                        "public, max-age=86400"
+                    },
+                ),
+            ],
+            file.data,
+        )
+            .into_response(),
+        None => not_found(),
+    }
 }
 
 /// Serve robots.txt for search engines.
@@ -217,6 +239,7 @@ mod tests {
 
     #[test]
     fn static_seo_files_exist() {
+        assert!(Assets::get("ads.txt").is_some(), "ads.txt must exist");
         assert!(Assets::get("robots.txt").is_some(), "robots.txt must exist");
         assert!(
             Assets::get("sitemap.xml").is_some(),
