@@ -42,20 +42,23 @@ pub fn router(state: AppState) -> Router {
 
     let mut router = Router::new();
     for &(route, page, title) in assets::PAGES {
+        if route == "/" {
+            router = router.route(route, get(assets::serve_landing));
+            continue;
+        }
         router = router.route(
             route,
             get(move || async move { assets::serve_page(page, title) }),
         );
     }
-    let (_, landing, landing_title) = assets::PAGES[0];
     let mut router = router
-        .route(
-            "/index.html",
-            get(move || async move { assets::serve_page(landing, landing_title) }),
-        )
+        .route("/index.html", get(assets::serve_landing))
         .route("/robots.txt", get(assets::serve_robots))
         .route("/ads.txt", get(assets::serve_ads_txt))
         .route("/sitemap.xml", get(assets::serve_sitemap))
+        .route("/.well-known/{*path}", get(assets::serve_agent_doc))
+        .route("/auth.md", get(assets::serve_agent_doc))
+        .route("/llms.txt", get(assets::serve_agent_doc))
         .nest("/api", api)
         .fallback(assets::asset_or_404)
         .layer(axum::middleware::from_fn(middleware::security_headers))

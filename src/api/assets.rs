@@ -6,7 +6,7 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use axum::http::{header, StatusCode, Uri};
+use axum::http::{header, HeaderMap, StatusCode, Uri};
 use axum::response::{Html, IntoResponse, Response};
 use rust_embed::Embed;
 
@@ -33,6 +33,13 @@ const PUBLIC_FILES: &[&str] = &["robots.txt", "sitemap.xml", "ads.txt"];
 /// Only these directories are served as raw files; `html/` fragments are never exposed.
 const PUBLIC_PREFIXES: &[&str] = &["css/", "js/", "img/"];
 const MAX_PARTIAL_EXPANSIONS: usize = 200;
+
+const LINK_HEADER: &str = concat!(
+    "</.well-known/api-catalog>; rel=\"api-catalog\", ",
+    "</auth.md>; rel=\"describedby\"; type=\"text/markdown\", ",
+    "</.well-known/agent-card.json>; rel=\"a2a-agent-card\", ",
+    "</.well-known/ai-catalog.json>; rel=\"ai-catalog\""
+);
 
 fn read_text(path: &str) -> Option<String> {
     Assets::get(path).map(|file| String::from_utf8_lossy(&file.data).into_owned())
@@ -87,7 +94,72 @@ pub fn serve_page(page: &'static str, title: &'static str) -> Response {
 }
 
 fn page_response(html: String) -> Response {
-    ([(header::CACHE_CONTROL, "no-cache")], Html(html)).into_response()
+    (
+        [
+            (header::CACHE_CONTROL, "no-cache"),
+            (header::LINK, LINK_HEADER),
+        ],
+        Html(html),
+    )
+        .into_response()
+}
+
+/// Serve the landing page, honouring `Accept: text/markdown`.
+pub async fn serve_landing(headers: HeaderMap) -> Response {
+    let wants_markdown = headers
+        .get(header::ACCEPT)
+        .and_then(|value| value.to_str().ok())
+        .map(|value| value.contains("text/markdown"))
+        .unwrap_or(false);
+    if wants_markdown {
+        if let Some(file) = Assets::get("llms.txt") {
+            return (
+                [
+                    (header::CONTENT_TYPE, "text/markdown; charset=utf-8"),
+                    (header::CACHE_CONTROL, "no-cache"),
+                    (header::LINK, LINK_HEADER),
+                ],
+                file.data.into_owned(),
+            )
+                .into_response();
+        }
+    }
+    let (_, landing, landing_title) = PAGES[0];
+    serve_page(landing, landing_title)
+}
+
+/// Serve `/.well-known/*`, `auth.md` and `llms.txt` from the embedded tree.
+pub async fn serve_agent_doc(uri: Uri) -> Response {
+    let path = uri.path().trim_start_matches('/');
+    let allowed = path.starts_with(".well-known/") || path == "auth.md" || path == "llms.txt";
+    if !allowed
+        || path
+            .split('/')
+            .any(|segment| segment.is_empty() || segment == "..")
+    {
+        return not_found();
+    }
+    let Some(file) = Assets::get(path) else {
+        return not_found();
+    };
+    let content_type = if path.ends_with("api-catalog") {
+        "application/linkset+json; charset=utf-8"
+    } else if path.ends_with(".md") {
+        "text/markdown; charset=utf-8"
+    } else if path.ends_with(".txt") {
+        "text/plain; charset=utf-8"
+    } else {
+        "application/json; charset=utf-8"
+    };
+    (
+        [
+            (header::CONTENT_TYPE, content_type),
+            (header::CACHE_CONTROL, "no-cache"),
+            (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+        ],
+        file.data.into_owned(),
+    )
+        .into_response()
 }
 
 /// Serve ads.txt for ad networks.
@@ -118,14 +190,7 @@ pub async fn serve_robots() -> Response {
         Some(file) => (
             [
                 (header::CONTENT_TYPE, "text/plain; charset=utf-8"),
-                (
-                    header::CACHE_CONTROL,
-                    if cfg!(debug_assertions) {
-                        "no-cache"
-                    } else {
-                        "public, max-age=86400"
-                    },
-                ),
+                (header::CACHE_CONTROL, "no-cache, must-revalidate"),
             ],
             file.data.into_owned(),
         )

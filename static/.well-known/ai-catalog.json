@@ -1,0 +1,28 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Uptime Medics",
+    "identifier": "did:web:uptime.nevatal.id"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:uptime.nevatal.id:api:site",
+      "displayName": "Uptime Medics API",
+      "type": "application/json",
+      "url": "https://uptime.nevatal.id/api/health",
+      "representativeQueries": [
+        "what does Uptime Medics do",
+        "get data from Uptime Medics"
+      ]
+    },
+    {
+      "identifier": "urn:air:uptime.nevatal.id:server:mcp",
+      "displayName": "Uptime Medics MCP Server",
+      "type": "application/mcp-server-card+json",
+      "url": "https://uptime.nevatal.id/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "query Uptime Medics"
+      ]
+    }
+  ]
+}

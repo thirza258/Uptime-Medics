@@ -1,0 +1,19 @@
+{
+  "serverInfo": {
+    "name": "uptime-medics-mcp",
+    "version": "1.0.0"
+  },
+  "endpoint": "https://uptime.nevatal.id/mcp",
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {
+      "subscribe": false,
+      "listChanged": false
+    },
+    "prompts": {
+      "listChanged": false
+    }
+  }
+}

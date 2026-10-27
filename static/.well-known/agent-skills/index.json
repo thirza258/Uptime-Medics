@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "create-monitor",
+      "type": "skill-md",
+      "description": "Create an uptime monitor for a URL.",
+      "url": "https://uptime.nevatal.id/.well-known/agent-skills/create-monitor/SKILL.md"
+    },
+    {
+      "name": "check-status",
+      "type": "skill-md",
+      "description": "Read the current status and response time of a monitor.",
+      "url": "https://uptime.nevatal.id/.well-known/agent-skills/check-status/SKILL.md"
+    },
+    {
+      "name": "view-incidents",
+      "type": "skill-md",
+      "description": "Read incident history and outage logs.",
+      "url": "https://uptime.nevatal.id/.well-known/agent-skills/view-incidents/SKILL.md"
+    }
+  ]
+}

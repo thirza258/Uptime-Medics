@@ -1,0 +1,65 @@
+{
+  "issuer": "https://uptime.nevatal.id",
+  "authorization_endpoint": "https://uptime.nevatal.id/api/auth/authorize",
+  "token_endpoint": "https://uptime.nevatal.id/api/auth/token",
+  "registration_endpoint": "https://uptime.nevatal.id/api/agent/register",
+  "jwks_uri": "https://uptime.nevatal.id/.well-known/jwks.json",
+  "response_types_supported": [
+    "code",
+    "token"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
+  "scopes_supported": [
+    "read",
+    "write",
+    "openid",
+    "profile",
+    "email"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_post"
+  ],
+  "poppy_domains": [
+    "uptime.nevatal.id"
+  ],
+  "revocation_endpoint": "https://uptime.nevatal.id/api/agent/revoke",
+  "device_authorization_endpoint": "https://uptime.nevatal.id/oauth/device_authorization",
+  "agent_auth": {
+    "skill": "https://uptime.nevatal.id/auth.md",
+    "register_uri": "https://uptime.nevatal.id/api/agent/register",
+    "identity_types_supported": [
+      "identity_assertion",
+      "anonymous"
+    ],
+    "identity_assertion": {
+      "assertion_types_supported": [
+        "urn:ietf:params:oauth:token-type:id-jag",
+        "verified_email"
+      ],
+      "credential_types_supported": [
+        "bearer_token",
+        "api_key"
+      ]
+    },
+    "anonymous": {
+      "credential_types_supported": [
+        "bearer_token",
+        "api_key"
+      ]
+    },
+    "credential_types_supported": [
+      "bearer_token",
+      "api_key"
+    ],
+    "claim_uri": "https://uptime.nevatal.id/api/agent/claim",
+    "revocation_uri": "https://uptime.nevatal.id/api/agent/revoke",
+    "events_supported": [
+      "revocation"
+    ]
+  }
+}

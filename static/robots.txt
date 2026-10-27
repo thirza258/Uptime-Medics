@@ -9,3 +9,4 @@ Disallow: /api/
 Disallow: /dashboard
 
 Sitemap: https://uptime.nevatal.id/sitemap.xml
+Agentmap: https://uptime.nevatal.id/.well-known/ai-catalog.json

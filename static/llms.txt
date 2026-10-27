@@ -1,0 +1,11 @@
+# Uptime Medics
+
+> Uptime monitoring with HTTP checks, incident history and alerting.
+
+## Endpoints
+- Homepage: https://uptime.nevatal.id/
+- API: https://uptime.nevatal.id/api/health
+- API Catalog: https://uptime.nevatal.id/.well-known/api-catalog
+- Agent Card: https://uptime.nevatal.id/.well-known/agent-card.json
+- AI Catalog: https://uptime.nevatal.id/.well-known/ai-catalog.json
+- Authentication Guide: https://uptime.nevatal.id/auth.md

@@ -1,0 +1,25 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://uptime.nevatal.id/api",
+      "service-desc": [
+        {
+          "href": "https://uptime.nevatal.id/api/health",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://uptime.nevatal.id/auth.md",
+          "type": "text/markdown"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://uptime.nevatal.id/api/health",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

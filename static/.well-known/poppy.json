@@ -1,0 +1,46 @@
+{
+  "protocol_version": "0.1",
+  "organization": {
+    "name": "Nevatal",
+    "domain": "uptime.nevatal.id"
+  },
+  "auth": {
+    "issuer": "https://uptime.nevatal.id",
+    "direct": {
+      "scopes": [
+        "poppy:read",
+        "poppy:write"
+      ]
+    },
+    "device": {
+      "scopes": [
+        "poppy:read",
+        "poppy:write"
+      ]
+    }
+  },
+  "agent": {
+    "protocols": [
+      {
+        "type": "poppy",
+        "endpoint": "https://uptime.nevatal.id/api/"
+      }
+    ]
+  },
+  "apis": [
+    {
+      "type": "openapi",
+      "url": "https://uptime.nevatal.id/api/health",
+      "description": "Uptime Medics API"
+    },
+    {
+      "type": "mcp",
+      "url": "https://uptime.nevatal.id/mcp",
+      "description": "Uptime Medics MCP server"
+    }
+  ],
+  "web": {
+    "browser_session_endpoint": "https://uptime.nevatal.id/"
+  },
+  "extensions": {}
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Uptime Medics Agent",
+  "description": "Uptime monitoring with HTTP checks, incident history and alerting.",
+  "url": "https://uptime.nevatal.id",
+  "provider": {
+    "name": "Nevatal",
+    "url": "https://uptime.nevatal.id"
+  },
+  "version": "1.0.0",
+  "protocolVersion": "0.3.0",
+  "preferredTransport": "JSONRPC",
+  "supportedInterfaces": [
+    {
+      "url": "https://uptime.nevatal.id/api",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "0.3.0"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "create-monitor",
+      "name": "Create Monitor",
+      "description": "Create an uptime monitor for a URL."
+    },
+    {
+      "id": "check-status",
+      "name": "Check Status",
+      "description": "Read the current status and response time of a monitor."
+    },
+    {
+      "id": "view-incidents",
+      "name": "View Incidents",
+      "description": "Read incident history and outage logs."
+    }
+  ],
+  "authentication": {
+    "type": "oauth2",
+    "discovery_url": "https://uptime.nevatal.id/.well-known/oauth-authorization-server"
+  }
+}
