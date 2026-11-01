@@ -1,0 +1,52 @@
+<div class="legal-layout" style="max-width: 860px; margin: 32px auto; padding: 0 16px;">
+    <section class="card" style="background: var(--white); border: 2px solid var(--dark); border-radius: 8px; padding: 32px 28px; box-shadow: var(--shadow); margin-bottom: 24px;">
+        <div style="display: inline-block; font-family: var(--mono); font-size: 0.8rem; background: var(--gray); color: var(--dark); padding: 4px 8px; border: 1px solid var(--dark); border-radius: 4px; margin-bottom: 12px;">LOCAL PRIVACY &amp; DATA SOVEREIGNTY</div>
+        <h1 style="font-size: 2rem; margin-bottom: 12px; color: var(--dark);">Privacy Policy</h1>
+        <p style="color: var(--muted); margin: 0; line-height: 1.6;">
+            Learn how Uptime Medics protects your monitoring data with complete self-hosted isolation.
+        </p>
+    </section>
+
+    <div style="background: var(--white); border-left: 6px solid var(--green); border-top: 2px solid var(--dark); border-right: 2px solid var(--dark); border-bottom: 2px solid var(--dark); border-radius: 8px; padding: 18px 24px; margin-bottom: 28px; box-shadow: var(--shadow);">
+        <strong style="color: var(--dark); font-size: 1.05rem;">🔒 100% Fully Self-Hosted Platform:</strong>
+        <p style="margin: 8px 0 0 0; color: var(--muted); line-height: 1.5; font-size: 0.95rem;">
+            Uptime Medics is entirely self-hosted on private infrastructure. Your data does not go anywhere: probe logs, target URLs, health states, and user details are never sold, shared, or sent to external data brokers or telemetry clouds.
+        </p>
+    </div>
+
+    <div style="color: var(--muted); font-family: var(--mono); font-size: 0.85rem; margin-bottom: 24px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-2);">
+        Effective Date: November 1, 2026 &bull; Version 1.1
+    </div>
+
+    <div class="card" style="background: var(--white); border: 2px solid var(--dark); border-radius: 8px; padding: 32px 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 24px; line-height: 1.7; color: var(--dark);">
+        <section>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">1. Overview &amp; Local Data Boundary</h2>
+            <p style="color: var(--muted);">
+                Uptime Medics runs an automated probe scheduler and local SQLite/PostgreSQL storage. All probe pings, HTTP head checks, and response timing calculations originate and terminate strictly on our self-hosted servers.
+            </p>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">2. Monitored Targets &amp; Anonymity</h2>
+            <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: var(--muted);">
+                <li><strong>Anonymous Monitors:</strong> Public monitors created on the landing page maintain 48 hours of check history visible on the public dashboard.</li>
+                <li><strong>Registered Accounts:</strong> Optional accounts store your email and argon2id password hash for private monitors, alerts, and 30-day incident retention.</li>
+                <li><strong>No Invasive Cookies:</strong> We only issue a secure, HTTP-only session cookie for authenticated users. No advertising or third-party surveillance cookies exist.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">3. No Artificial Intelligence / Third-Party AI Models</h2>
+            <p style="color: var(--muted);">
+                <strong>Uptime Medics does not utilize AI inference or external AI APIs.</strong> We do not dispatch target URLs, downtime metrics, or server logs to OpenRouter or any third-party AI provider. All probes and state machines operate with deterministic Rust code.
+            </p>
+        </section>
+
+        <section>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">4. Data Deletion</h2>
+            <p style="color: var(--muted);">
+                You can delete private monitors or request full account purge at any time from your dashboard.
+            </p>
+        </section>
+    </div>
+</div>

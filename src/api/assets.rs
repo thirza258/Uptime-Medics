@@ -25,6 +25,8 @@ pub const PAGES: &[(&str, &str, &str)] = &[
     ("/dashboard", "dashboard", "My Monitors | Uptime Medics"),
     ("/courses", "courses", "Uptime Courses | Uptime Medics"),
     ("/login", "login", "Sign in | Uptime Medics"),
+    ("/privacy", "privacy", "Privacy Policy | Uptime Medics"),
+    ("/terms", "terms", "Terms of Service | Uptime Medics"),
 ];
 
 /// Specific public root files served directly.
